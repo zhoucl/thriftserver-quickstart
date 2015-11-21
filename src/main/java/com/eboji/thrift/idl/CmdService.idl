@@ -1,0 +1,8 @@
+/**
+ * ThriftServer command service IDL
+ */
+namespace java com.eboji.thrift.service
+
+service CmdService {
+	void stop();
+} 

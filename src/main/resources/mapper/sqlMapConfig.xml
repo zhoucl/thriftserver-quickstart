@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+
+	<!-- 别名设置 -->
+	<typeAliases>
+
+	</typeAliases>
+	
+	<!-- 分页插件 -->
+	<!-- github:https://github.com/miemiedev/mybatis-paginator -->
+	<plugins>
+		<plugin interceptor="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+            <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect"/>  
+        </plugin> 
+	</plugins>
+	
+	<mappers>
+		<mapper resource="mapper/HomeMapper.xml" />
+	</mappers>
+</configuration>
