@@ -1,5 +1,8 @@
 package com.eboji.server;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
@@ -37,6 +40,11 @@ public class ThreadPoolServer implements Server {
 
 			args.protocolFactory(tProtocolFactory);
 			args.processor(tMultiplexedProcessor);
+			
+			ExecutorService executorService = Executors.newFixedThreadPool(5);
+			args.executorService(executorService);
+			args.minWorkerThreads(10);
+			args.maxWorkerThreads(20);
 
 			server = new TThreadPoolServer(args);
 		} catch (Exception e) {

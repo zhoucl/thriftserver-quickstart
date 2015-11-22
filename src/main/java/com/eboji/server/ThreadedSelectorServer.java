@@ -1,5 +1,8 @@
 package com.eboji.server;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
@@ -41,6 +44,11 @@ public class ThreadedSelectorServer implements Server {
 			args.transportFactory(tTransportFactory);
 			args.processor(tMultiplexedProcessor);
 
+			
+			ExecutorService executorService = Executors.newFixedThreadPool(3);
+			args.selectorThreads(4);
+			args.executorService(executorService);
+			
 			server = new TThreadedSelectorServer(args);
 		} catch (Exception e) {
 			logger.error("Threaded Selector server initilized error!\n"
