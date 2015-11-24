@@ -17,8 +17,7 @@
 		<aspectjweaver-version>1.8.0</aspectjweaver-version>
 		<cglib-version>3.1</cglib-version>
 		<org.slf4j-version>1.7.12</org.slf4j-version>
-		<log4j-version>1.2.15</log4j-version>
-		<log4j2-version>2.4.1</log4j2-version>
+		<logback-version>1.1.3</logback-version>
 		<commons-dbcp2-version>2.0</commons-dbcp2-version>
 		<commons-pool2-version>2.2</commons-pool2-version>
 		<geronimo-jta-spec-version>1.1.1</geronimo-jta-spec-version>
@@ -32,8 +31,8 @@
 		<json-lib-version>2.4</json-lib-version>
 		<dom4j-version>2.0.0-RC1</dom4j-version>
 		<jackson-version>2.4.1</jackson-version>
-		<memcached-java-client-version>2.6.6</memcached-java-client-version>
 		<commons-pool-version>1.6</commons-pool-version>
+		<thrift-version>0.9.3</thrift-version>
 		<junit-version>4.11</junit-version>
 	</properties>
 
@@ -111,30 +110,19 @@
 			<version>${org.slf4j-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-			<version>${org.slf4j-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j2-version}</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j2-version}</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-web</artifactId>
-			<version>${log4j2-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j2-version}</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<version>${logback-version}</version>
 		</dependency>
 
 		<!-- @Inject -->
@@ -219,13 +207,6 @@
 			<version>${jackson-version}</version>
 		</dependency>
 
-		<!-- memcached-java-client -->
-		<dependency>
-			<groupId>com.danga</groupId>
-			<artifactId>memcached-java-client</artifactId>
-			<version>${memcached-java-client-version}</version>
-		</dependency>
-
 		<!-- commons-pool -->
 		<dependency>
 			<groupId>commons-pool</groupId>
@@ -236,13 +217,13 @@
 		<dependency>
 			<groupId>org.apache.thrift</groupId>
 			<artifactId>libthrift</artifactId>
-			<version>0.9.3</version>
+			<version>${thrift-version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit-version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -260,7 +241,31 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-
+			
+			<plugin>  
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <version>1.8</version>
+			    <executions>  
+			        <execution>  
+						<phase>process-resources</phase>  
+			            <goals>  
+			                <goal>run</goal>  
+			            </goals>
+			             
+			            <configuration>  
+			                <tasks>
+			                	 <copy file="${project.basedir}/shbat/start.bat" 
+			                	 	tofile="${project.build.directory}/bin/start.bat" overwrite="true"/>
+			                	 <copy file="${project.basedir}/shbat/setenv.bat" 
+			                	 	tofile="${project.build.directory}/bin/setenv.bat" overwrite="true"/>
+			                	 <move file="${project.build.directory}/classes/logback.xml" tofile="${project.build.directory}/conf/logback.xml"/>
+			                </tasks>  
+			            </configuration>  
+			        </execution>  
+			    </executions>  
+			</plugin>
+			
 			<!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -269,10 +274,11 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
+							<classpathPrefix>../lib/</classpathPrefix>
 							<mainClass>com.eboji.bootstrap.Bootstrap</mainClass>
 						</manifest>
 					</archive>
+					<outputDirectory>${project.build.directory}/bin</outputDirectory>
 				</configuration>
 			</plugin>
 
