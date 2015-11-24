@@ -1,24 +1,55 @@
 package com.eboji.bootstrap;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
  * 项目启动的入口类
  * @author zhoucl
  */
 public class Bootstrap {
+	static {
+		try {
+			ShutdownHook.doShutdownHook();
+			
+			/**
+			 * 读取conf文件夹中的logback.xml配置文件
+			 */
+			String jarPath = Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+			jarPath = jarPath.substring(0, jarPath.lastIndexOf('/'));
+			jarPath = jarPath.substring(0, jarPath.lastIndexOf('/') + 1) + "conf";
+			File logbackFile = new File(jarPath + "/logback.xml");
+			
+			if (logbackFile.exists()) {
+	            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+	            JoranConfigurator configurator = new JoranConfigurator();
+	            configurator.setContext(lc);
+	            lc.reset();
+	            try {
+	                configurator.doConfigure(logbackFile);
+	            }
+	            catch (JoranException e) {
+	                e.printStackTrace(System.err);
+	                System.exit(-1);
+	            }
+	        }
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+			System.exit(-1);
+		}
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 	
 	private static final Daemon daemon = Daemon.getInstance();
 	
-	static {
-		ShutdownHook.doShutdownHook();
-	}
-
 	public static void main(String[] args) {
-		
 		checkArgs(args);
 		
 		try {
@@ -37,7 +68,7 @@ public class Bootstrap {
 			}
 		} catch (Exception e) {
 			logger.error("server start fail!", e);
-			System.exit(1);
+			System.exit(-1);
 		}
 	}
 	
@@ -70,7 +101,7 @@ public class Bootstrap {
 			}
 		} catch (Exception x) {
 			logger.error("Can not parse arguments! See --help");
-			System.exit(1);
+			System.exit(-1);
 		}
 	}
 }

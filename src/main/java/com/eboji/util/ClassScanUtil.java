@@ -12,14 +12,15 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 扫描指定包(包括jar)下的class文件的工具类
  * @author zhoucl 
  */
 public class ClassScanUtil {
-	private static final Logger logger = Logger.getLogger(ClassScanUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(ClassScanUtil.class);
 
 	/**
 	 * 扫描指定包的所有class文件
